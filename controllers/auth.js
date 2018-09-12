@@ -38,6 +38,7 @@ exports.login = async (req, res) => {
 };
 
 exports.register = async (req, res) => {
+  console.log(req.body);
   const user = await User.findOne({email: req.body.email});
   if (user) {
     res.status(409).json({
