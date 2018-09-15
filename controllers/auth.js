@@ -38,7 +38,6 @@ exports.login = async (req, res) => {
 };
 
 exports.register = async (req, res) => {
-  console.log(req.body);
   const user = await User.findOne({email: req.body.email});
   if (user) {
     res.status(409).json({
@@ -52,10 +51,15 @@ exports.register = async (req, res) => {
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, salt),
     });
-
     try {
       await newUser.save();
-      res.status(201).json(newUser);
+	    const tokens = await generateTokens(newUser._id);
+      res.status(201).json({
+	      accessToken: `Bearer ${tokens.accessToken}`,
+	      refreshToken: tokens.refreshToken,
+	      firstName: newUser.firstName,
+	      lastName: newUser.lastName,
+      });
     } catch (e) {
       errorHandler(res, e);
     }
@@ -64,7 +68,6 @@ exports.register = async (req, res) => {
 
 exports.refreshToken = async (req, res) => {
   const token = req.body.refreshToken;
-
   try {
     await jwt.verify(token, keys.refreshSecret);
     const sessionInfo = await Session.findOne({refreshToken: token});
