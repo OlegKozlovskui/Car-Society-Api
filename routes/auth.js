@@ -1,9 +1,12 @@
-const express = require('express');
-const controller = require('../controllers/auth');
-const router = express.Router();
+const router = require('express-promise-router')();
+const passport = require('passport');
 
-router.post('/login', controller.login);
-router.post('/register', controller.register);
+const controller = require('../controllers/auth');
+
+router.post('/signup', controller.signUp);
+router.post('/signin', passport.authenticate('local', { session: false }), controller.signIn);
+router.post('/oauth/google', passport.authenticate('google-plus-token', { session: false }), controller.signIn);
+router.post('/oauth/facebook', passport.authenticate('facebook-token', { session: false }), controller.signIn);
 router.post('/refreshToken', controller.refreshToken);
 
 module.exports = router;

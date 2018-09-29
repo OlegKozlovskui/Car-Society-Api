@@ -1,14 +1,16 @@
 const jwt = require('jsonwebtoken');
-const keys = require('../config/keys');
+
+const config = require('../config/config');
 const Session = require('../models/Session');
 
 exports.generateTokens = async (userId) => {
-  const accessToken = jwt.sign({userId}, keys.jwtSecret, {expiresIn: keys.tokenLife});
-  const refreshToken = jwt.sign({type: 'refresh'}, keys.refreshSecret, {expiresIn: keys.refreshTokenLife});
+  const accessToken = jwt.sign({userId}, config.JWT_TOKEN_SECRET, { expiresIn: config.JWT_TOKEN_LIFE });
+  const refreshToken = jwt.sign({ type: 'refresh' }, config.REFRESH_TOKEN_SECRET, { expiresIn: config.REFRESH_TOKEN_LIFE });
   const newRefreshToken = new Session({
     userId: userId,
     refreshToken
   });
+  
   await newRefreshToken.save();
   return {
     accessToken,

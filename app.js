@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
 const authRoutes = require('./routes/auth');
-const profileRoutes = require('./routes/profile');
+const userRoutes = require('./routes/user');
 const carRoutes = require('./routes/car');
 
 const app = express();
@@ -27,8 +27,8 @@ app.use(function(req, res, next) {
 	next();
 });
 
-app.use('/api/users', authRoutes);
-app.use('/api/profile', profileRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/cars', carRoutes);
 
 module.exports = app;

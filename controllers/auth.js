@@ -1,69 +1,46 @@
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const keys = require('../config/keys');
+const keys = require('../config/config');
 
 const User = require('../models/User');
 const Session = require('../models/Session');
 const errorHandler = require('../utils/errorHandler');
-const generateTokens = require("../services/auth").generateTokens;
+const generateTokens = require('../services/auth').generateTokens;
 
-exports.login = async (req, res) => {
-  const user = await User.findOne({email: req.body.email});
-  if (user) {
-    const isPassMatch = bcrypt.compareSync(req.body.password, user.password);
-    if (isPassMatch) {
-      try {
-        const tokens = await generateTokens(user._id);
-        res.status(200).json({
-          accessToken: `Bearer ${tokens.accessToken}`,
-          refreshToken: tokens.refreshToken,
-          userId: user._id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-        });
-      } catch (e) {
-        errorHandler(res, e);
-      }
-    } else {
-      res.status(401).json({
-        massage: 'Wrong password'
-      })
-    }
-  } else {
-    res.status(404).json({
-      massage: 'Wrong credentials'
-    })
-  }
+exports.signIn = async (req, res) => {
+  const user = req.user;
+	const tokens = await generateTokens(user._id);
+	
+	res.status(200).json({
+		accessToken: `Bearer ${tokens.accessToken}`,
+		refreshToken: tokens.refreshToken,
+		userId: user._id,
+	});
 };
 
-exports.register = async (req, res) => {
+exports.signUp = async (req, res) => {
   const user = await User.findOne({email: req.body.email});
-  if (user) {
-    res.status(409).json({
-      message: 'User already exist',
-    })
-  } else {
-    const salt = bcrypt.genSaltSync(12);
-    const newUser = new User({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      password: bcrypt.hashSync(req.body.password, salt),
-    });
-    try {
-      await newUser.save();
-	    const tokens = await generateTokens(newUser._id);
-      res.status(201).json({
-	      accessToken: `Bearer ${tokens.accessToken}`,
-	      refreshToken: tokens.refreshToken,
-	      firstName: newUser.firstName,
-	      lastName: newUser.lastName,
-      });
-    } catch (e) {
-      errorHandler(res, e);
-    }
-  }
+  
+	if (user) {
+		return res.status(409).json({ message: 'Email is already in use' });
+	}
+	
+	const newUser = new User({
+    method: 'local',
+		firstName: req.body.firstName,
+		lastName: req.body.lastName,
+		email: req.body.email,
+		password: req.body.password,
+	});
+	
+	await newUser.save();
+	
+	const tokens = await generateTokens(newUser._id);
+	
+	res.status(201).json({
+		accessToken: `Bearer ${tokens.accessToken}`,
+		refreshToken: tokens.refreshToken,
+		userId: newUser._id,
+	});
 };
 
 exports.refreshToken = async (req, res) => {

@@ -1,0 +1,10 @@
+module.exports = {
+  JWT_TOKEN_SECRET: 'devvv',
+	REFRESH_TOKEN_SECRET: 'sadsadasddsa',
+	JWT_TOKEN_LIFE: '60m',
+	REFRESH_TOKEN_LIFE: '60m',
+  GOOGLE_CLIENT_ID: '351111601495-jevmg1g5qbapp2utjj1daas8ufan5igu.apps.googleusercontent.com',
+	GOOGLE_CLIENT_SECRET: '7FYctwpkgGRZARjRH37aekOx',
+	FACEBOOK_CLIENT_ID: '2042449906067212',
+	FACEBOOK_CLIENT_SECRET: 'e0a3bce335ac278975f149dd32e3a541',
+};
