@@ -5,5 +5,5 @@ module.exports.getAllCars = (req, res) => {
     { name: 'Bentley' },
     { name: 'Bugatti' },
     { name: 'Ferrari' },
-  ])
+  ]);
 };

@@ -7,6 +7,7 @@ const morgan = require('morgan');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const carRoutes = require('./routes/car');
+const brandRoutes = require('./routes/brand');
 
 const app = express();
 
@@ -18,6 +19,8 @@ app.use(passport.initialize());
 require('./middleware/passport')(passport);
 
 app.use(morgan('dev'));
+app.use('/uploads', express.static('uploads'));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use(function(req, res, next) {
@@ -30,5 +33,6 @@ app.use(function(req, res, next) {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/cars', carRoutes);
+app.use('/api/brands', brandRoutes);
 
 module.exports = app;
